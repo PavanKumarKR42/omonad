@@ -26,7 +26,7 @@
   }' />
 
   <style>
-  :root {
+:root {
   --primary: #836EF9;
   --primary-glow: rgba(131, 110, 249, 0.5);
   --accent: #A0F3D3;
@@ -58,9 +58,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-x: hidden;
   padding: 12px;
+  padding-top: 20px;
 }
 
 .orb {
@@ -101,12 +102,12 @@ body {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 10px 14px;
-  margin-bottom: 8px;
+  border-radius: 16px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -121,8 +122,8 @@ body {
 }
 
 .user-banner .pfp {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 2px solid var(--primary);
   object-fit: cover;
@@ -137,13 +138,13 @@ body {
 }
 
 .user-banner .username {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
 }
 
 .user-banner .fid {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -152,8 +153,8 @@ body {
 }
 
 .user-banner .info-btn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--card-border);
@@ -162,7 +163,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .user-banner .info-btn:hover {
@@ -179,15 +180,15 @@ body {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-border);
-  border-radius: 28px;
-  padding: 32px 20px 24px;
+  border-radius: 24px;
+  padding: 28px 18px 20px;
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 40px;
+  gap: 14px;
+  margin-top: 24px;
 }
 
 .header {
@@ -196,10 +197,10 @@ body {
 }
 
 .logo-wrapper {
-  width: 100px;
-  height: 100px;
+  width: 85px;
+  height: 85px;
   background: transparent;
-  margin: -42px auto 8px;
+  margin: -36px auto 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,9 +222,9 @@ body {
 }
 
 h1 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   background: linear-gradient(to right, #fff, #a5a5a5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -231,15 +232,15 @@ h1 {
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
   line-height: 1.4;
 }
 
 .stats-card {
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 18px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 14px;
   border: 1px solid var(--card-border);
 }
 
@@ -247,8 +248,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -267,12 +268,12 @@ h1 {
 }
 
 .stat-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .mon-price {
@@ -334,14 +335,14 @@ h1 {
   background: rgba(212, 175, 55, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 14px;
-  padding: 16px;
+  padding: 14px;
 }
 
 .benefits-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--gold);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
@@ -349,11 +350,11 @@ h1 {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .benefits-list li {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-main);
   padding-left: 4px;
 }
@@ -363,21 +364,21 @@ h1 {
   background: rgba(131, 110, 249, 0.1);
   border: 1px solid var(--primary);
   border-radius: 14px;
-  padding: 14px;
+  padding: 12px;
   text-align: center;
 }
 
 .countdown-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .countdown-timer {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--primary);
   font-family: 'SF Mono', monospace;
@@ -386,15 +387,15 @@ h1 {
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 14px;
+  padding: 14px;
+  border-radius: 13px;
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
@@ -404,7 +405,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn:disabled {
@@ -513,7 +514,7 @@ h1 {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.hidden { display: none !important; }  </style>
+.hidden { display: none !important; }</style>
 </head>
 <body>
 
@@ -585,9 +586,7 @@ h1 {
         <span>✨ Share on Farcaster</span>
       </button>
 
-      <button class="btn btn-secondary hidden" id="detailsBtn">
-        <span>View Full Details</span>
-      </button>
+     
     </div>
 
     <div id="statusMessage" class="status-msg">
