@@ -49,7 +49,7 @@
 
 body {
   background-color: var(--bg-dark);
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(131, 110, 249, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(68, 48, 145, 0.15) 0%, transparent 40%);
   color: var(--text-main);
@@ -60,7 +60,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow-x: hidden;
-  padding: 20px;
+  padding: 12px;
 }
 
 .orb {
@@ -101,13 +101,13 @@ body {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-border);
-  border-radius: 24px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
+  border-radius: 20px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 
+  gap: 12px;
+  box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
   opacity: 0;
@@ -121,8 +121,8 @@ body {
 }
 
 .user-banner .pfp {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid var(--primary);
   object-fit: cover;
@@ -133,27 +133,27 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .user-banner .username {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-main);
 }
 
 .user-banner .fid {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .user-banner .info-btn {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--card-border);
@@ -162,7 +162,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .user-banner .info-btn:hover {
@@ -179,15 +179,15 @@ body {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--card-border);
-  border-radius: 32px;
-  padding: 40px 24px 32px;
-  box-shadow: 
+  border-radius: 28px;
+  padding: 32px 20px 24px;
+  box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  margin-top: 60px;
+  gap: 18px;
+  margin-top: 40px;
 }
 
 .header {
@@ -196,10 +196,10 @@ body {
 }
 
 .logo-wrapper {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   background: transparent;
-  margin: -50px auto 10px; 
+  margin: -42px auto 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,9 +221,9 @@ body {
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   background: linear-gradient(to right, #fff, #a5a5a5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -231,15 +231,15 @@ h1 {
 }
 
 .subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .stats-card {
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 16px;
   border: 1px solid var(--card-border);
 }
 
@@ -247,8 +247,8 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -259,15 +259,15 @@ h1 {
 }
 
 .stat-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--text-muted);
 }
 
 .stat-value {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
   display: flex;
@@ -280,21 +280,21 @@ h1 {
 }
 
 .badge {
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 100px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .badge::before {
   content: '';
   display: block;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
 }
 
@@ -322,9 +322,9 @@ h1 {
 
 .address-display {
   font-family: 'SF Mono', 'Roboto Mono', monospace;
-  font-size: 14px;
+  font-size: 13px;
   background: rgba(131, 110, 249, 0.1);
-  padding: 4px 8px;
+  padding: 3px 7px;
   border-radius: 6px;
   color: #C4B5FD;
 }
@@ -333,15 +333,15 @@ h1 {
 .benefits-section {
   background: rgba(212, 175, 55, 0.05);
   border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 14px;
+  padding: 16px;
 }
 
 .benefits-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--gold);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -349,11 +349,11 @@ h1 {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .benefits-list li {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-main);
   padding-left: 4px;
 }
@@ -362,22 +362,22 @@ h1 {
 .countdown-card {
   background: rgba(131, 110, 249, 0.1);
   border: 1px solid var(--primary);
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 14px;
+  padding: 14px;
   text-align: center;
 }
 
 .countdown-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .countdown-timer {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--primary);
   font-family: 'SF Mono', monospace;
@@ -386,15 +386,15 @@ h1 {
 .actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .btn {
   width: 100%;
-  padding: 18px;
-  border-radius: 16px;
+  padding: 16px;
+  border-radius: 14px;
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
@@ -469,8 +469,8 @@ h1 {
 
 .status-msg {
   text-align: center;
-  font-size: 13px;
-  min-height: 20px;
+  font-size: 12px;
+  min-height: 18px;
   color: var(--text-muted);
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -479,20 +479,20 @@ h1 {
 
 .toast {
   position: fixed;
-  bottom: 24px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
   background: rgba(20, 20, 30, 0.95);
   color: white;
-  padding: 14px 24px;
+  padding: 12px 20px;
   border-radius: 50px;
   border: 1px solid var(--card-border);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   z-index: 100;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   white-space: nowrap;
@@ -503,8 +503,8 @@ h1 {
 }
 
 .loader {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: 50%;
   border-top-color: #fff;
@@ -513,8 +513,7 @@ h1 {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.hidden { display: none !important; }
-  </style>
+.hidden { display: none !important; }  </style>
 </head>
 <body>
 
