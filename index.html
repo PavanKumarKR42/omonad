@@ -37,6 +37,7 @@
       --text-muted: #9CA3AF;
       --success: #2ECC71;
       --error: #FF5252;
+      --neynar-bar: #1F1D2C; /* Darker background for the Neynar bar */
     }
 
     * {
@@ -91,6 +92,78 @@
       50% { transform: translate(20px, 40px); }
     }
 
+    /* --- NEW USER INFO BAR STYLES --- */
+    .user-info-bar {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 400px;
+      background: var(--neynar-bar);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: none; /* Initially hidden */
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .user-info-bar.visible {
+      display: flex;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-pfp {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--primary);
+    }
+
+    .user-details {
+      line-height: 1.3;
+    }
+
+    .user-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .user-fid {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .info-btn {
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.2s;
+    }
+
+    .info-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* --- MAIN CARD STYLES --- */
     .container {
       position: relative;
       z-index: 10;
@@ -108,7 +181,7 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
-      margin-top: 60px; /* Increased top margin to accommodate the logo */
+      margin-top: 60px; /* Space for the floating logo */
     }
 
     .header {
@@ -116,12 +189,11 @@
       position: relative;
     }
 
-    /* --- UPDATED LOGO STYLES --- */
     .logo-wrapper {
       width: 120px;
       height: 120px;
       background: transparent;
-      /* Changed from -100px to -50px to move it down so it sits on the edge */
+      /* Moved down from -100px to -50px */
       margin: -50px auto 10px; 
       display: flex;
       align-items: center;
@@ -134,21 +206,16 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      /* UPDATED: Changed from 20s to 3s for faster rotation */
+      /* Faster rotation */
       animation: rotate-center 3s linear infinite;
       filter: drop-shadow(0 0 20px rgba(131, 110, 249, 0.4));
     }
 
     @keyframes rotate-center {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-    /* --------------------------- */
-
+    
     h1 {
       font-size: 28px;
       font-weight: 800;
@@ -171,6 +238,8 @@
       padding: 20px;
       border: 1px solid var(--card-border);
     }
+    
+    /* ... (rest of the CSS for stats-card, buttons, etc. remains the same) */
 
     .stat-row {
       display: flex;
@@ -384,6 +453,18 @@
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
+  <div id="userInfoBar" class="user-info-bar">
+    <div class="user-profile">
+      <img id="pfp" src="" alt="Profile Picture" class="user-pfp" />
+      <div class="user-details">
+        <div id="displayName" class="user-name">Farcaster User</div>
+        <div id="fid" class="user-fid">FID: ---</div>
+      </div>
+    </div>
+    <button class="info-btn" onclick="showToast('Viewing Farcaster User Info', 'ℹ️');">
+      <span class="material-icons-outlined"></span> INFO
+    </button>
+  </div>
   <div class="container">
     <div class="header">
       <div class="logo-wrapper">
@@ -441,6 +522,9 @@
     import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
 
     // --- Configuration ---
+    const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
+    const NEYNAR_BASE_URL = 'https://api.neynar.com';
+
     const monad = defineChain({
       id: 143,
       name: 'Monad Mainnet',
@@ -483,12 +567,17 @@
       statusMsg: document.getElementById('statusMessage'),
       toast: document.getElementById('toast'),
       toastMsg: document.getElementById('toastMsg'),
-      toastIcon: document.getElementById('toastIcon')
+      toastIcon: document.getElementById('toastIcon'),
+      // New Neynar UI elements
+      userInfoBar: document.getElementById('userInfoBar'),
+      pfp: document.getElementById('pfp'),
+      displayName: document.getElementById('displayName'),
+      fid: document.getElementById('fid')
     };
 
     let userAddress = null;
 
-    function showToast(msg, icon = 'ℹ️') {
+    window.showToast = function(msg, icon = 'ℹ️') {
       ui.toastMsg.textContent = msg;
       ui.toastIcon.textContent = icon;
       ui.toast.classList.add('show');
@@ -531,6 +620,49 @@
       }
     }
 
+    /**
+     * Fetches Farcaster user details using the connected wallet address via Neynar API.
+     * @param {string} address The wallet address to search for.
+     */
+    async function fetchFarcasterUser(address) {
+        const url = `${NEYNAR_BASE_URL}/v2/farcaster/user/bulk-by-address?addresses=${address}`;
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'accept': 'application/json',
+                    'api_key': NEYNAR_API_KEY,
+                }
+            });
+            
+            if (!response.ok) {
+                console.error("Neynar API Error:", response.statusText);
+                return;
+            }
+
+            const data = await response.json();
+            const userData = data[address] ? data[address][0] : null;
+
+            if (userData) {
+                // Update UI with Farcaster data
+                ui.pfp.src = userData.pfp_url;
+                ui.displayName.textContent = userData.display_name || userData.username;
+                ui.fid.textContent = `FID: ${userData.fid}`;
+                ui.userInfoBar.classList.add('visible');
+            } else {
+                console.log("No Farcaster user found for this address.");
+                // Fallback for non-Farcaster addresses
+                ui.displayName.textContent = "Wallet Connected";
+                ui.pfp.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23836EF9"/><text x="50" y="65" font-size="30" font-family="Outfit" fill="white" text-anchor="middle">W</text></svg>';
+                ui.fid.textContent = `Address`;
+                ui.userInfoBar.classList.add('visible');
+            }
+
+        } catch (error) {
+            console.error("Error fetching Neynar data:", error);
+            showToast('Failed to fetch Farcaster info.', '⚠️');
+        }
+    }
+
     // --- SDK Init ---
     sdk.actions.ready({ disableNativeGestures: true });
 
@@ -552,6 +684,11 @@
           ui.userAddress.innerHTML = `<span class="address-display">${userAddress.slice(0, 4)}...${userAddress.slice(-4)}</span>`;
           ui.connectBtn.classList.add('hidden');
           showToast('Wallet Connected', '✅');
+          
+          // 1. Fetch Farcaster User details
+          await fetchFarcasterUser(userAddress);
+
+          // 2. Check Whitelist Status
           await checkWhitelistStatus(userAddress);
         }
       } catch (error) {
