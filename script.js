@@ -78,6 +78,77 @@ const publicClient = createPublicClient({
 });
 
 // UI Elements
+sdk.actions.ready({ disableNativeGestures: true })
+  .then(async () => {
+    console.log("Farcaster MiniApp SDK ready!");
+    setStatus('App ready! Connecting wallet...');
+    
+    // Start countdown
+    startCountdown();
+    
+    try {
+      let account = getAccount(config);
+      
+      // Auto-connect if not already connected
+      if (!account?.address) {
+        const result = await connect(config, {
+          connector: farcasterMiniApp(),
+          chainId: monad.id
+        });
+        console.log('Connection result:', result);
+        account = getAccount(config);
+      }
+      
+      if (account?.address) {
+        isConnected = true;
+        userAddress = account.address;
+        const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
+        
+        ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
+        ui.statusBadge.innerHTML = 'Connected';
+        ui.statusBadge.className = 'badge badge-success';
+        ui.connectBtn.classList.add('hidden');
+        
+        console.log('Wallet connected:', account.address);
+        showToast('Wallet Connected', '✅');
+        
+        // Fetch Farcaster user data
+        await fetchFarcasterUser(userAddress);
+        
+        // Check NFT balance
+        const balance = await checkNFTBalance(userAddress);
+        updateState(balance);
+        
+      } else {
+        console.warn('No address found after connection attempt');
+        setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
+      }
+
+    } catch (err) {
+      console.error('Wallet connection error:', err);
+      setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
+    }
+
+    // Auto-prompt to add app
+    const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
+    if (!hasPromptedAddApp) {
+      try {
+        console.log('Auto-prompting add app...');
+        await sdk.actions.addMiniApp();
+        sessionStorage.setItem('hasPromptedAddApp', 'true');
+        console.log('App added successfully!');
+      } catch (error) {
+        console.log('Add app prompt dismissed or failed:', error.name);
+        sessionStorage.setItem('hasPromptedAddApp', 'true');
+      }
+    }
+
+  })
+  .catch(err => {
+    console.error("SDK initialization failed:", err);
+    setStatus('Failed to initialize. Please reopen in Warpcast.');
+  });
+
 const ui = {
   connectBtn: document.getElementById('connectBtn'),
   mintBtn: document.getElementById('mintBtn'),
@@ -219,76 +290,6 @@ function updateState(nftBalance) {
 // Initialize Farcaster SDK - MUST BE CALLED FIRST
 console.log('Initializing Farcaster SDK...');
 
-sdk.actions.ready({ disableNativeGestures: true })
-  .then(async () => {
-    console.log("Farcaster MiniApp SDK ready!");
-    setStatus('App ready! Connecting wallet...');
-    
-    // Start countdown
-    startCountdown();
-    
-    try {
-      let account = getAccount(config);
-      
-      // Auto-connect if not already connected
-      if (!account?.address) {
-        const result = await connect(config, {
-          connector: farcasterMiniApp(),
-          chainId: monad.id
-        });
-        console.log('Connection result:', result);
-        account = getAccount(config);
-      }
-      
-      if (account?.address) {
-        isConnected = true;
-        userAddress = account.address;
-        const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
-        
-        ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
-        ui.statusBadge.innerHTML = 'Connected';
-        ui.statusBadge.className = 'badge badge-success';
-        ui.connectBtn.classList.add('hidden');
-        
-        console.log('Wallet connected:', account.address);
-        showToast('Wallet Connected', '✅');
-        
-        // Fetch Farcaster user data
-        await fetchFarcasterUser(userAddress);
-        
-        // Check NFT balance
-        const balance = await checkNFTBalance(userAddress);
-        updateState(balance);
-        
-      } else {
-        console.warn('No address found after connection attempt');
-        setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
-      }
-
-    } catch (err) {
-      console.error('Wallet connection error:', err);
-      setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
-    }
-
-    // Auto-prompt to add app
-    const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
-    if (!hasPromptedAddApp) {
-      try {
-        console.log('Auto-prompting add app...');
-        await sdk.actions.addMiniApp();
-        sessionStorage.setItem('hasPromptedAddApp', 'true');
-        console.log('App added successfully!');
-      } catch (error) {
-        console.log('Add app prompt dismissed or failed:', error.name);
-        sessionStorage.setItem('hasPromptedAddApp', 'true');
-      }
-    }
-
-  })
-  .catch(err => {
-    console.error("SDK initialization failed:", err);
-    setStatus('Failed to initialize. Please reopen in Warpcast.');
-  });
 
 // Manual Connect Button (fallback)
 ui.connectBtn.onclick = async () => {
