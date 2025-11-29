@@ -25,14 +25,502 @@
     }
   }' />
 
-  <link rel="stylesheet" href="styles.css">
+  <style>
+  :root {
+  --primary: #836EF9;
+  --primary-glow: rgba(131, 110, 249, 0.5);
+  --accent: #A0F3D3;
+  --bg-dark: #0E0C15;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text-main: #FFFFFF;
+  --text-muted: #9CA3AF;
+  --success: #2ECC71;
+  --error: #FF5252;
+  --gold: #D4AF37;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(131, 110, 249, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(68, 48, 145, 0.15) 0%, transparent 40%);
+  color: var(--text-main);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  animation: float 10s infinite ease-in-out;
+}
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  background: rgba(131, 110, 249, 0.2);
+  top: -100px;
+  left: -50px;
+}
+.orb-2 {
+  width: 250px;
+  height: 250px;
+  background: rgba(46, 204, 113, 0.1);
+  bottom: -50px;
+  right: -50px;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, 40px); }
+}
+
+/* User Info Banner */
+.user-banner {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  background: rgba(20, 20, 30, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s ease;
+}
+
+.user-banner.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-banner .pfp {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  object-fit: cover;
+  box-shadow: 0 0 20px rgba(131, 110, 249, 0.4);
+}
+
+.user-banner .user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-banner .username {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.user-banner .fid {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.user-banner .info-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+
+.user-banner .info-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  background: rgba(20, 20, 30, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  border-radius: 32px;
+  padding: 40px 24px 32px;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.header {
+  text-align: center;
+  position: relative;
+}
+
+.logo-wrapper {
+  width: 120px;
+  height: 120px;
+  background: transparent;
+  margin: -50px auto 10px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 20;
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: rotate-center 3s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(131, 110, 249, 0.4));
+}
+
+@keyframes rotate-center {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(to right, #fff, #a5a5a5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.stats-card {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid var(--card-border);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.stat-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mon-price {
+  color: var(--primary);
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badge-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.badge-neutral::before { background: var(--text-muted); }
+
+.badge-success {
+  background: rgba(46, 204, 113, 0.15);
+  color: #A0F3D3;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.1);
+}
+.badge-success::before { background: #2ECC71; box-shadow: 0 0 5px #2ECC71; }
+
+.badge-pending {
+  background: rgba(255, 82, 82, 0.1);
+  color: #FF8A80;
+  border: 1px solid rgba(255, 82, 82, 0.3);
+}
+.badge-pending::before { background: var(--error); }
+
+.address-display {
+  font-family: 'SF Mono', 'Roboto Mono', monospace;
+  font-size: 14px;
+  background: rgba(131, 110, 249, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #C4B5FD;
+}
+
+/* Benefits Section */
+.benefits-section {
+  background: rgba(212, 175, 55, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.benefits-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.benefits-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.benefits-list li {
+  font-size: 14px;
+  color: var(--text-main);
+  padding-left: 4px;
+}
+
+/* Countdown Card */
+.countdown-card {
+  background: rgba(131, 110, 249, 0.1);
+  border: 1px solid var(--primary);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.countdown-timer {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  font-family: 'SF Mono', monospace;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 0 #5E4BC4, 0 10px 20px rgba(131, 110, 249, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #5E4BC4, 0 15px 30px rgba(131, 110, 249, 0.5);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #5E4BC4;
+}
+
+.btn-action {
+  background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+  color: #1a1a1a;
+  box-shadow: 0 4px 0 #B8941F, 0 10px 20px rgba(212, 175, 55, 0.3);
+}
+
+.btn-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #B8941F, 0 15px 30px rgba(212, 175, 55, 0.4);
+}
+
+.btn-action:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #B8941F;
+}
+
+.btn-share {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-share:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid var(--card-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary);
+}
+
+.status-msg {
+  text-align: center;
+  font-size: 13px;
+  min-height: 20px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.status-msg.visible { opacity: 1; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(20, 20, 30, 0.95);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 50px;
+  border: 1px solid var(--card-border);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.loader {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hidden { display: none !important; }
+  </style>
 </head>
 <body>
 
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
-  <!-- User Info Banner -->
   <div id="userBanner" class="user-banner">
     <img id="userPfp" src="" alt="Profile" class="pfp" />
     <div class="user-info">
@@ -45,7 +533,7 @@
   <div class="container">
     <div class="header">
       <div class="logo-wrapper">
-        <img src="./mon.png" alt="Monad Logo" class="logo-img" />
+        <img src="https://omonad.vercel.app/mon.png" alt="Monad Logo" class="logo-img" />
       </div>
       <h1>MON Whitelist</h1>
       <p class="subtitle">Secure your allocation for the upcoming Monad mint.</p>
@@ -70,7 +558,6 @@
       </div>
     </div>
 
-    <!-- Whitelist Pass Benefits -->
     <div class="benefits-section">
       <h3 class="benefits-title">Whitelist Pass Benefits</h3>
       <ul class="benefits-list">
@@ -81,7 +568,6 @@
       </ul>
     </div>
 
-    <!-- Mint Opens Countdown -->
     <div class="countdown-card">
       <div class="countdown-label">Mint Opens In:</div>
       <div class="countdown-timer" id="countdown">02d · 13h · 44m</div>
@@ -115,6 +601,334 @@
     <span id="toastMsg">Notification</span>
   </div>
 
-  <script type="module" src="script.js"></script>
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+    import {
+      createConfig, connect, readContract, writeContract, getAccount
+    } from 'https://esm.sh/@wagmi/core';
+    import { farcasterMiniApp } from 'https://esm.sh/@farcaster/miniapp-wagmi-connector';
+    import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
+
+    // Configuration
+    const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
+    const NEYNAR_BASE_URL = 'https://api.neynar.com';
+
+    const monad = defineChain({
+      id: 143,
+      name: 'Monad Mainnet',
+      network: 'monad',
+      nativeCurrency: { decimals: 18, name: 'Monad', symbol: 'MON' },
+      rpcUrls: {
+        default: { http: ['https://rpc.monad.xyz'] },
+        public: { http: ['https://rpc.monad.xyz'] },
+      },
+      blockExplorers: {
+        default: { name: 'MonadVision', url: 'https://monadvision.com' },
+      },
+    });
+
+    const NFT_CONTRACT = '0x5a98a240d1951f422f1685c4c21251f446a26948';
+    const MINT_PRICE = '13';
+    const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
+
+    const NFT_ABI = [
+      {
+        "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+    ];
+
+    const config = createConfig({
+      chains: [monad],
+      transports: { [monad.id]: http() }
+    });
+
+    const publicClient = createPublicClient({
+      chain: monad,
+      transport: http()
+    });
+
+    const ui = {
+      connectBtn: document.getElementById('connectBtn'),
+      mintBtn: document.getElementById('mintBtn'),
+      shareBtn: document.getElementById('shareBtn'),
+      detailsBtn: document.getElementById('detailsBtn'),
+      statusBadge: document.getElementById('statusBadge'),
+      userAddress: document.getElementById('userAddress'),
+      nftBalance: document.getElementById('nftBalance'),
+      statusMsg: document.getElementById('statusMessage'),
+      toast: document.getElementById('toast'),
+      toastMsg: document.getElementById('toastMsg'),
+      toastIcon: document.getElementById('toastIcon'),
+      userBanner: document.getElementById('userBanner'),
+      userPfp: document.getElementById('userPfp'),
+      displayName: document.getElementById('displayName'),
+      fidDisplay: document.getElementById('fidDisplay'),
+      countdown: document.getElementById('countdown')
+    };
+
+    let userAddress = null;
+    let isConnected = false;
+    let farcasterUserData = null;
+    let countdownInterval = null;
+
+    function startCountdown() {
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + 2);
+      targetDate.setHours(targetDate.getHours() + 13);
+      targetDate.setMinutes(targetDate.getMinutes() + 44);
+
+      countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          ui.countdown.textContent = 'LIVE NOW!';
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        ui.countdown.textContent = `${days.toString().padStart(2, '0')}d · ${hours.toString().padStart(2, '0')}h · ${minutes.toString().padStart(2, '0')}m · ${seconds.toString().padStart(2, '0')}s`;
+      }, 1000);
+    }
+
+    async function fetchFarcasterUser(address) {
+      try {
+        const response = await fetch(
+          `${NEYNAR_BASE_URL}/v2/farcaster/user/bulk-by-address?addresses=${address}&address_types=verified_address,custody_address`,
+          {
+            headers: {
+              'x-api-key': NEYNAR_API_KEY,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch user data');
+
+        const data = await response.json();
+        const users = data[address.toLowerCase()];
+        if (users && users.length > 0) {
+          farcasterUserData = users[0];
+          updateUserBanner(farcasterUserData);
+        }
+      } catch (error) {
+        console.error('Error fetching Farcaster user:', error);
+      }
+    }
+
+    function updateUserBanner(userData) {
+      ui.userPfp.src = userData.pfp_url || '';
+      ui.displayName.textContent = userData.display_name || userData.username || 'Anonymous';
+      const score = userData.score || userData.experimental?.neynar_user_score || 0;
+      ui.fidDisplay.innerHTML = `FID: ${userData.fid}<br>Neynar Score: ${score.toFixed(2)}`;
+      ui.userBanner.classList.add('visible');
+    }
+
+    function showToast(msg, icon = 'ℹ️') {
+      ui.toastMsg.textContent = msg;
+      ui.toastIcon.textContent = icon;
+      ui.toast.classList.add('show');
+      setTimeout(() => ui.toast.classList.remove('show'), 3000);
+    }
+
+    function setStatus(text) {
+      ui.statusMsg.textContent = text;
+      ui.statusMsg.classList.add('visible');
+    }
+
+    async function checkNFTBalance(address) {
+      try {
+        const balance = await readContract(config, {
+          address: NFT_CONTRACT,
+          abi: NFT_ABI,
+          functionName: 'balanceOf',
+          args: [address]
+        });
+        ui.nftBalance.textContent = balance.toString();
+        return Number(balance);
+      } catch (error) {
+        console.error('Error checking NFT balance:', error);
+        ui.nftBalance.textContent = '0';
+        return 0;
+      }
+    }
+
+    function updateState(nftBalance) {
+      if (nftBalance > 0) {
+        ui.statusBadge.innerHTML = 'Whitelisted';
+        ui.statusBadge.className = 'badge badge-success';
+        ui.mintBtn.classList.add('hidden');
+        ui.shareBtn.classList.remove('hidden');
+        ui.detailsBtn.classList.remove('hidden');
+        setStatus(`You own ${nftBalance} Whitelist Pass${nftBalance > 1 ? 'es' : ''}!`);
+      } else {
+        ui.statusBadge.innerHTML = 'Not Listed';
+        ui.statusBadge.className = 'badge badge-pending';
+        ui.mintBtn.classList.remove('hidden');
+        ui.shareBtn.classList.add('hidden');
+        ui.detailsBtn.classList.remove('hidden');
+        setStatus('Mint your NFT pass to secure your slot');
+      }
+    }
+
+    console.log('Initializing Farcaster SDK...');
+
+    sdk.actions.ready({ disableNativeGestures: true })
+      .then(async () => {
+        console.log("Farcaster MiniApp SDK ready!");
+        setStatus('App ready! Connecting wallet...');
+        startCountdown();
+        
+        try {
+          let account = getAccount(config);
+          
+          if (!account?.address) {
+            const result = await connect(config, {
+              connector: farcasterMiniApp(),
+              chainId: monad.id
+            });
+            console.log('Connection result:', result);
+            account = getAccount(config);
+          }
+          
+          if (account?.address) {
+            isConnected = true;
+            userAddress = account.address;
+            const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
+            
+            ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
+            ui.statusBadge.innerHTML = 'Connected';
+            ui.statusBadge.className = 'badge badge-success';
+            ui.connectBtn.classList.add('hidden');
+            
+            console.log('Wallet connected:', account.address);
+            showToast('Wallet Connected', '✅');
+            
+            await fetchFarcasterUser(userAddress);
+            const balance = await checkNFTBalance(userAddress);
+            updateState(balance);
+            
+          } else {
+            console.warn('No address found after connection attempt');
+            setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
+          }
+
+        } catch (err) {
+          console.error('Wallet connection error:', err);
+          setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
+        }
+
+        const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
+        if (!hasPromptedAddApp) {
+          try {
+            console.log('Auto-prompting add app...');
+            await sdk.actions.addMiniApp();
+            sessionStorage.setItem('hasPromptedAddApp', 'true');
+            console.log('App added successfully!');
+          } catch (error) {
+            console.log('Add app prompt dismissed or failed:', error.name);
+            sessionStorage.setItem('hasPromptedAddApp', 'true');
+          }
+        }
+
+      })
+      .catch(err => {
+        console.error("SDK initialization failed:", err);
+        setStatus('Failed to initialize. Please reopen in Warpcast.');
+      });
+
+    ui.connectBtn.onclick = async () => {
+      try {
+        ui.connectBtn.disabled = true;
+        ui.connectBtn.innerHTML = '<div class="loader"></div>';
+        
+        await connect(config, {
+          connector: farcasterMiniApp(),
+          chainId: monad.id
+        });
+
+        const account = getAccount(config);
+        userAddress = account.address;
+
+        if (userAddress) {
+          const shortAddress = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+          ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
+          ui.connectBtn.classList.add('hidden');
+          showToast('Wallet Connected', '✅');
+          await fetchFarcasterUser(userAddress);
+          const balance = await checkNFTBalance(userAddress);
+          updateState(balance);
+        }
+      } catch (error) {
+        console.error(error);
+        ui.connectBtn.disabled = false;
+        ui.connectBtn.textContent = 'Connect Wallet';
+        showToast('Connection Failed', '❌');
+      }
+    };
+
+    ui.mintBtn.onclick = async () => {
+      try {
+        ui.mintBtn.disabled = true;
+        ui.mintBtn.innerHTML = '<div class="loader"></div> Minting...';
+        
+        const txHash = await writeContract(config, {
+          address: NFT_CONTRACT,
+          abi: NFT_ABI,
+          functionName: 'mint',
+          value: parseEther(MINT_PRICE)
+        });
+
+        showToast('Transaction Sent', '⏳');
+        await publicClient.waitForTransactionReceipt({ hash: txHash });
+        
+        showToast('NFT Minted Successfully!', '🎉');
+        
+        const balance = await checkNFTBalance(userAddress);
+        updateState(balance);
+        
+        ui.mintBtn.disabled = false;
+        ui.mintBtn.innerHTML = '<span>Mint Whitelist Pass (13 MON)</span>';
+      } catch (error) {
+        console.error(error);
+        showToast('Transaction Failed', '❌');
+        ui.mintBtn.disabled = false;
+        ui.mintBtn.innerHTML = '<span>Mint Whitelist Pass (13 MON)</span>';
+      }
+    };
+
+    ui.shareBtn.onclick = async () => {
+      try {
+        await sdk.actions.composeCast({
+          text: `🔮 Just secured my spot on the Monad Whitelist with an NFT pass! \n\nMint yours now and get guaranteed allocation 👇`,
+          embeds: [GAME_URL]
+        });
+      } catch (error) {
+        console.error('Share error:', error);
+        showToast('Failed to share', '❌');
+      }
+    };
+
+    ui.detailsBtn.onclick = () => {
+      showToast('Opening contract details...', 'ℹ️');
+      window.open(`https://monadvision.com/address/${NFT_CONTRACT}`, '_blank');
+    };
+  </script>
 </body>
 </html>
