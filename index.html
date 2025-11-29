@@ -509,214 +509,282 @@
 
   <script type="module">
     import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
-    import {
-      createConfig, connect, readContract, writeContract, getAccount
-    } from 'https://esm.sh/@wagmi/core';
-    import { farcasterMiniApp } from 'https://esm.sh/@farcaster/miniapp-wagmi-connector';
-    import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
+import {
+  createConfig, connect, readContract, writeContract, getAccount
+} from 'https://esm.sh/@wagmi/core';
+import { farcasterMiniApp } from 'https://esm.sh/@farcaster/miniapp-wagmi-connector';
+import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
 
-    // Configuration
-    const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
-    const NEYNAR_BASE_URL = 'https://api.neynar.com';
+// Configuration
+const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
+const NEYNAR_BASE_URL = 'https://api.neynar.com';
 
-    const monad = defineChain({
-      id: 143,
-      name: 'Monad Mainnet',
-      network: 'monad',
-      nativeCurrency: { decimals: 18, name: 'Monad', symbol: 'MON' },
-      rpcUrls: {
-        default: { http: ['https://rpc.monad.xyz'] },
-        public: { http: ['https://rpc.monad.xyz'] },
-      },
-      blockExplorers: {
-        default: { name: 'MonadVision', url: 'https://monadvision.com' },
-      },
-    });
+const monad = defineChain({
+  id: 143,
+  name: 'Monad Mainnet',
+  network: 'monad',
+  nativeCurrency: { decimals: 18, name: 'Monad', symbol: 'MON' },
+  rpcUrls: {
+    default: { http: ['https://rpc.monad.xyz'] },
+    public: { http: ['https://rpc.monad.xyz'] },
+  },
+  blockExplorers: {
+    default: { name: 'MonadVision', url: 'https://monadvision.com' },
+  },
+});
 
-    const WHITELIST_CONTRACT = '0x92a373ab17f14559b2176947e5032450a0928407';
-    const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
+const WHITELIST_CONTRACT = '0x92a373ab17f14559b2176947e5032450a0928407';
+const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
+
+const WHITELIST_ABI = [
+  { "inputs": [{"internalType": "address","name": "","type": "address"}], "name": "whitelisted", "outputs": [{"internalType": "bool","name": "","type": "bool"}], "stateMutability": "view", "type": "function" },
+  { "inputs": [], "name": "joinWhitelist", "outputs": [], "stateMutability": "payable", "type": "function" }
+];
+
+const config = createConfig({
+  chains: [monad],
+  transports: { [monad.id]: http() }
+});
+
+const publicClient = createPublicClient({
+  chain: monad,
+  transport: http()
+});
+
+// UI Elements
+const ui = {
+  connectBtn: document.getElementById('connectBtn'),
+  payBtn: document.getElementById('payBtn'),
+  shareBtn: document.getElementById('shareBtn'),
+  statusBadge: document.getElementById('statusBadge'),
+  userAddress: document.getElementById('userAddress'),
+  statusMsg: document.getElementById('statusMessage'),
+  toast: document.getElementById('toast'),
+  toastMsg: document.getElementById('toastMsg'),
+  toastIcon: document.getElementById('toastIcon'),
+  userBanner: document.getElementById('userBanner'),
+  userPfp: document.getElementById('userPfp'),
+  displayName: document.getElementById('displayName'),
+  fidDisplay: document.getElementById('fidDisplay')
+};
+
+// State
+let userAddress = null;
+let isConnected = false;
+let farcasterUserData = null;
+
+// Fetch user info from Neynar API
+async function fetchFarcasterUser(address) {
+  try {
+    const response = await fetch(
+      `${NEYNAR_BASE_URL}/v2/farcaster/user/bulk-by-address?addresses=${address}&address_types=verified_address,custody_address`,
+      {
+        headers: {
+          'x-api-key': NEYNAR_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
+    }
+
+    const data = await response.json();
     
-    const WHITELIST_ABI = [
-      { "inputs": [{"internalType": "address","name": "","type": "address"}], "name": "whitelisted", "outputs": [{"internalType": "bool","name": "","type": "bool"}], "stateMutability": "view", "type": "function" },
-      { "inputs": [], "name": "joinWhitelist", "outputs": [], "stateMutability": "payable", "type": "function" }
-    ];
+    // Get the first user from the response
+    const users = data[address.toLowerCase()];
+    if (users && users.length > 0) {
+      farcasterUserData = users[0];
+      updateUserBanner(farcasterUserData);
+    }
+  } catch (error) {
+    console.error('Error fetching Farcaster user:', error);
+  }
+}
 
-    const config = createConfig({
-      chains: [monad],
-      transports: { [monad.id]: http() }
+function updateUserBanner(userData) {
+  ui.userPfp.src = userData.pfp_url || '';
+  ui.displayName.textContent = userData.display_name || userData.username || 'Anonymous';
+  ui.fidDisplay.textContent = `FID: ${userData.fid}`;
+  ui.userBanner.classList.add('visible');
+}
+
+function showToast(msg, icon = 'ℹ️') {
+  ui.toastMsg.textContent = msg;
+  ui.toastIcon.textContent = icon;
+  ui.toast.classList.add('show');
+  setTimeout(() => ui.toast.classList.remove('show'), 3000);
+}
+
+function setStatus(text) {
+  ui.statusMsg.textContent = text;
+  ui.statusMsg.classList.add('visible');
+}
+
+function updateState(isWhitelisted) {
+  if (isWhitelisted) {
+    ui.statusBadge.innerHTML = 'Whitelisted';
+    ui.statusBadge.className = 'badge badge-success';
+    ui.payBtn.classList.add('hidden');
+    ui.shareBtn.classList.remove('hidden');
+    setStatus('You are all set!');
+  } else {
+    ui.statusBadge.innerHTML = 'Not Listed';
+    ui.statusBadge.className = 'badge badge-pending';
+    ui.payBtn.classList.remove('hidden');
+    ui.shareBtn.classList.add('hidden');
+    setStatus('Payment required to join');
+  }
+}
+
+async function checkWhitelistStatus(address) {
+  try {
+    const isWhitelisted = await readContract(config, {
+      address: WHITELIST_CONTRACT,
+      abi: WHITELIST_ABI,
+      functionName: 'whitelisted',
+      args: [address]
     });
+    updateState(isWhitelisted);
+  } catch (error) {
+    console.error(error);
+    showToast('Failed to fetch status', '⚠️');
+  }
+}
 
-    const publicClient = createPublicClient({
-      chain: monad,
-      transport: http()
-    });
+// Initialize SDK and Auto-Connect
+console.log('Initializing Farcaster SDK...');
 
-    // UI Elements
-    const ui = {
-      connectBtn: document.getElementById('connectBtn'),
-      payBtn: document.getElementById('payBtn'),
-      shareBtn: document.getElementById('shareBtn'),
-      statusBadge: document.getElementById('statusBadge'),
-      userAddress: document.getElementById('userAddress'),
-      statusMsg: document.getElementById('statusMessage'),
-      toast: document.getElementById('toast'),
-      toastMsg: document.getElementById('toastMsg'),
-      toastIcon: document.getElementById('toastIcon'),
-      userBanner: document.getElementById('userBanner'),
-      userPfp: document.getElementById('userPfp'),
-      displayName: document.getElementById('displayName'),
-      fidDisplay: document.getElementById('fidDisplay')
-    };
-
-    let userAddress = null;
-    let farcasterUserData = null;
-
-    // Fetch user info from Neynar API
-    async function fetchFarcasterUser(address) {
-      try {
-        const response = await fetch(
-          `${NEYNAR_BASE_URL}/v2/farcaster/user/bulk-by-address?addresses=${address}&address_types=verified_address,custody_address`,
-          {
-            headers: {
-              'x-api-key': NEYNAR_API_KEY,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const data = await response.json();
-        
-        // Get the first user from the response
-        const users = data[address.toLowerCase()];
-        if (users && users.length > 0) {
-          farcasterUserData = users[0];
-          updateUserBanner(farcasterUserData);
-        }
-      } catch (error) {
-        console.error('Error fetching Farcaster user:', error);
-      }
-    }
-
-    function updateUserBanner(userData) {
-      ui.userPfp.src = userData.pfp_url || '';
-      ui.displayName.textContent = userData.display_name || userData.username || 'Anonymous';
-      ui.fidDisplay.textContent = `FID: ${userData.fid}`;
-      ui.userBanner.classList.add('visible');
-    }
-
-    function showToast(msg, icon = 'ℹ️') {
-      ui.toastMsg.textContent = msg;
-      ui.toastIcon.textContent = icon;
-      ui.toast.classList.add('show');
-      setTimeout(() => ui.toast.classList.remove('show'), 3000);
-    }
-
-    function setStatus(text) {
-      ui.statusMsg.textContent = text;
-      ui.statusMsg.classList.add('visible');
-    }
-
-    function updateState(isWhitelisted) {
-      if (isWhitelisted) {
-        ui.statusBadge.innerHTML = 'Whitelisted';
-        ui.statusBadge.className = 'badge badge-success';
-        ui.payBtn.classList.add('hidden');
-        ui.shareBtn.classList.remove('hidden');
-        setStatus('You are all set!');
-      } else {
-        ui.statusBadge.innerHTML = 'Not Listed';
-        ui.statusBadge.className = 'badge badge-pending';
-        ui.payBtn.classList.remove('hidden');
-        ui.shareBtn.classList.add('hidden');
-        setStatus('Payment required to join');
-      }
-    }
-
-    async function checkWhitelistStatus(address) {
-      try {
-        const isWhitelisted = await readContract(config, {
-          address: WHITELIST_CONTRACT,
-          abi: WHITELIST_ABI,
-          functionName: 'whitelisted',
-          args: [address]
-        });
-        updateState(isWhitelisted);
-      } catch (error) {
-        console.error(error);
-        showToast('Failed to fetch status', '⚠️');
-      }
-    }
-
-    // SDK Init
-    sdk.actions.ready({ disableNativeGestures: true });
-
-    // Event Listeners
-    ui.connectBtn.onclick = async () => {
-      try {
-        ui.connectBtn.disabled = true;
-        ui.connectBtn.innerHTML = '<div class="loader"></div>';
-        
-        await connect(config, {
+sdk.actions.ready({ disableNativeGestures: true })
+  .then(async () => {
+    console.log("Farcaster MiniApp SDK ready!");
+    setStatus('App ready! Connecting wallet...');
+    
+    try {
+      let account = getAccount(config);
+      
+      // Auto-connect if not already connected
+      if (!account?.address) {
+        const result = await connect(config, {
           connector: farcasterMiniApp(),
           chainId: monad.id
         });
-
-        const account = getAccount(config);
+        console.log('Connection result:', result);
+        account = getAccount(config);
+      }
+      
+      if (account?.address) {
+        isConnected = true;
         userAddress = account.address;
-
-        if (userAddress) {
-          ui.userAddress.innerHTML = `<span class="address-display">${userAddress.slice(0, 4)}...${userAddress.slice(-4)}</span>`;
-          ui.connectBtn.classList.add('hidden');
-          showToast('Wallet Connected', '✅');
-          
-          // Fetch Farcaster user data
-          await fetchFarcasterUser(userAddress);
-          
-          await checkWhitelistStatus(userAddress);
-        }
-      } catch (error) {
-        console.error(error);
-        ui.connectBtn.disabled = false;
-        ui.connectBtn.textContent = 'Connect Wallet';
-        showToast('Connection Failed', '❌');
+        const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
+        
+        ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
+        ui.statusBadge.innerHTML = 'Connected';
+        ui.statusBadge.className = 'badge badge-success';
+        ui.connectBtn.classList.add('hidden');
+        
+        console.log('Wallet connected:', account.address);
+        showToast('Wallet Connected', '✅');
+        
+        // Fetch Farcaster user data
+        await fetchFarcasterUser(userAddress);
+        
+        // Check whitelist status
+        await checkWhitelistStatus(userAddress);
+        
+      } else {
+        console.warn('No address found after connection attempt');
+        setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
       }
-    };
 
-    ui.payBtn.onclick = async () => {
+    } catch (err) {
+      console.error('Wallet connection error:', err);
+      setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
+    }
+
+    // Auto-prompt to add app
+    const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
+    if (!hasPromptedAddApp) {
       try {
-        ui.payBtn.disabled = true;
-        ui.payBtn.innerHTML = '<div class="loader"></div> Processing';
-        
-        const txHash = await writeContract(config, {
-          address: WHITELIST_CONTRACT,
-          abi: WHITELIST_ABI,
-          functionName: 'joinWhitelist',
-          value: parseEther('1')
-        });
-
-        showToast('Transaction Sent', '⏳');
-        await publicClient.waitForTransactionReceipt({ hash: txHash });
-        
-        showToast('Whitelist Joined!', '🎉');
-        updateState(true);
+        console.log('Auto-prompting add app...');
+        await sdk.actions.addMiniApp();
+        sessionStorage.setItem('hasPromptedAddApp', 'true');
+        console.log('App added successfully!');
       } catch (error) {
-        console.error(error);
-        showToast('Transaction Failed', '❌');
-        ui.payBtn.disabled = false;
-        ui.payBtn.textContent = 'Mint Whitelist Pass';
+        console.log('Add app prompt dismissed or failed:', error.name);
+        sessionStorage.setItem('hasPromptedAddApp', 'true');
       }
-    };
+    }
 
-    ui.shareBtn.onclick = async () => {
-      sdk.actions.composeCast({
-        text: `🔮 Just secured my spot on the Monad Whitelist! \n\nVerify your wallet and join now 👇`,
-        embeds: [GAME_URL]
-      });
-    };
+  })
+  .catch(err => {
+    console.error("SDK initialization failed:", err);
+    setStatus('Failed to initialize. Please reopen in Warpcast.');
+  });
+
+// Manual Connect Button (fallback)
+ui.connectBtn.onclick = async () => {
+  try {
+    ui.connectBtn.disabled = true;
+    ui.connectBtn.innerHTML = '<div class="loader"></div>';
+    
+    await connect(config, {
+      connector: farcasterMiniApp(),
+      chainId: monad.id
+    });
+
+    const account = getAccount(config);
+    userAddress = account.address;
+
+    if (userAddress) {
+      ui.userAddress.innerHTML = `<span class="address-display">${userAddress.slice(0, 4)}...${userAddress.slice(-4)}</span>`;
+      ui.connectBtn.classList.add('hidden');
+      showToast('Wallet Connected', '✅');
+      await fetchFarcasterUser(userAddress);
+      await checkWhitelistStatus(userAddress);
+    }
+  } catch (error) {
+    console.error(error);
+    ui.connectBtn.disabled = false;
+    ui.connectBtn.textContent = 'Connect Wallet';
+    showToast('Connection Failed', '❌');
+  }
+};
+
+// Pay Button
+ui.payBtn.onclick = async () => {
+  try {
+    ui.payBtn.disabled = true;
+    ui.payBtn.innerHTML = '<div class="loader"></div> Processing';
+    
+    const txHash = await writeContract(config, {
+      address: WHITELIST_CONTRACT,
+      abi: WHITELIST_ABI,
+      functionName: 'joinWhitelist',
+      value: parseEther('1')
+    });
+
+    showToast('Transaction Sent', '⏳');
+    await publicClient.waitForTransactionReceipt({ hash: txHash });
+    
+    showToast('Whitelist Joined!', '🎉');
+    updateState(true);
+  } catch (error) {
+    console.error(error);
+    showToast('Transaction Failed', '❌');
+    ui.payBtn.disabled = false;
+    ui.payBtn.textContent = 'Mint Whitelist Pass';
+  }
+};
+
+// Share Button
+ui.shareBtn.onclick = async () => {
+  sdk.actions.composeCast({
+    text: `🔮 Just secured my spot on the Monad Whitelist! \n\nVerify your wallet and join now 👇`,
+    embeds: [GAME_URL]
+  });
+};
   </script>
 </body>
 </html>
