@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=390, initial-scale=1.0" />
+  <title>MON Whitelist - Pay 1 MON to Get Whitelisted</title>
+
+  <meta name="fc:miniapp" content='{
+    "version":"1",
+    "imageUrl":"https://monad-mint-whitelist.vercel.app/preview.png",
+    "splashImageUrl": "https://monad-mint-whitelist.vercel.app/splash.png",
+    "button":{
+      "title":"Join Whitelist",
+      "action":{
+        "type":"launch_frame",
+        "name":"MON Whitelist",
+        "url":"https://monad-mint-whitelist.vercel.app/",
+        "splashImageUrl":"https://monad-mint-whitelist.vercel.app/splash.png",
+        "splashBackgroundColor":"#6366f1"
+      }
+    }
+  }' />
+
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    
+    body {
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: flex-start;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #fff;
+      padding: 20px; 
+      max-width: 390px; 
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(ellipse at top, rgba(99, 102, 241, 0.3), transparent 50%),
+        radial-gradient(ellipse at bottom, rgba(168, 85, 247, 0.3), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: bgPulse 8s ease-in-out infinite;
+    }
+    
+    @keyframes bgPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    body > * {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .logo-icon {
+      font-size: 64px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.5));
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    
+    .info-box {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      font-size: 13px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .info-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .status-not-whitelisted {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+    
+    .status-whitelisted {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: #86efac;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+    }
+    
+    .btn:hover:not(:disabled)::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.6);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .message {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      min-height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .message-info {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+    }
+    
+    .message-success {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+    
+    .message-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-weight: 600;
+      max-width: 360px;
+      width: calc(100% - 40px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      display: none;
+      z-index: 9999;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    .toast.show {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+    
+    .share-btn {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      margin-top: 12px;
+    }
+    
+    .share-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+      margin-left: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🎯</div>
+      <h1>MON Whitelist</h1>
+      <p class="subtitle">Pay 1 MON token to join the exclusive whitelist for our upcoming mint!</p>
+    </div>
+    
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Cost</span>
+        <span class="info-value">1 MON</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Your Status</span>
+        <span class="info-value">
+          <span id="statusBadge" class="status-badge status-not-whitelisted">Not Connected</span>
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Your Address</span>
+        <span class="info-value" id="userAddress">-</span>
+      </div>
+    </div>
+    
+    <div class="btn-group">
+      <button class="btn btn-primary" id="connectBtn">Connect Wallet</button>
+      <button class="btn btn-primary hidden" id="approveBtn">Approve MON Token</button>
+      <button class="btn btn-success hidden" id="payBtn">Pay 1 MON & Join Whitelist</button>
+      <button class="btn btn-primary share-btn hidden" id="shareBtn">🎉 Share on Farcaster</button>
+    </div>
+    
+    <div id="messageBox" class="message message-info">
+      Connect your wallet to check whitelist status
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+    import {
+      createConfig, connect, readContract, writeContract, getAccount
+    } from 'https://esm.sh/@wagmi/core';
+    import { base } from 'https://esm.sh/@wagmi/core/chains';
+    import { farcasterMiniApp } from 'https://esm.sh/@farcaster/miniapp-wagmi-connector';
+    import { createPublicClient, http, parseUnits } from 'https://esm.sh/viem';
+
+    // Configuration - REPLACE WITH YOUR CONTRACT ADDRESSES
+    const WHITELIST_CONTRACT = '0xYourWhitelistContractAddress';
+    const MON_TOKEN_ADDRESS = '0xYourMONTokenAddress';
+    const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
+    
+    // MON Token ABI (ERC20 approve function)
+    const TOKEN_ABI = [
+      {
+        "constant": false,
+        "inputs": [
+          { "name": "spender", "type": "address" },
+          { "name": "value", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          { "name": "owner", "type": "address" },
+          { "name": "spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [{ "name": "account", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "type": "function"
+      }
+    ];
+    
+    // Whitelist Contract ABI - REPLACE WITH YOUR ACTUAL ABI
+    const WHITELIST_ABI = [
+      {
+        "inputs": [],
+        "name": "payToJoinWhitelist",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [{ "name": "user", "type": "address" }],
+        "name": "isWhitelisted",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    const config = createConfig({
+      chains: [base],
+      transports: { [base.id]: http() }
+    });
+
+    const publicClient = createPublicClient({
+      chain: base,
+      transport: http()
+    });
+
+    // UI Elements
+    const connectBtn = document.getElementById('connectBtn');
+    const approveBtn = document.getElementById('approveBtn');
+    const payBtn = document.getElementById('payBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const statusBadge = document.getElementById('statusBadge');
+    const userAddressEl = document.getElementById('userAddress');
+    const messageBox = document.getElementById('messageBox');
+    const toastEl = document.getElementById('toast');
+
+    let userAddress = null;
+    let isWhitelisted = false;
+
+    function showToast(text, duration = 3500) {
+      toastEl.textContent = text;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), duration);
+    }
+
+    function showMessage(text, type = 'info') {
+      messageBox.textContent = text;
+      messageBox.className = `message message-${type}`;
+    }
+
+    function updateStatus(whitelisted) {
+      isWhitelisted = whitelisted;
+      if (whitelisted) {
+        statusBadge.textContent = 'Whitelisted ✓';
+        statusBadge.className = 'status-badge status-whitelisted';
+        showMessage('Congratulations! You are whitelisted!', 'success');
+        approveBtn.classList.add('hidden');
+        payBtn.classList.add('hidden');
+        shareBtn.classList.remove('hidden');
+      } else {
+        statusBadge.textContent = 'Not Whitelisted';
+        statusBadge.className = 'status-badge status-not-whitelisted';
+        showMessage('Join the whitelist by paying 1 MON token', 'info');
+        shareBtn.classList.add('hidden');
+      }
+    }
+
+    async function checkWhitelistStatus(address) {
+      try {
+        const whitelisted = await readContract(config, {
+          address: WHITELIST_CONTRACT,
+          abi: WHITELIST_ABI,
+          functionName: 'isWhitelisted',
+          args: [address]
+        });
+        
+        updateStatus(whitelisted);
+        
+        if (!whitelisted) {
+          await checkApproval(address);
+        }
+      } catch (error) {
+        console.error('Error checking whitelist:', error);
+        showMessage('Error checking whitelist status', 'error');
+      }
+    }
+
+    async function checkApproval(address) {
+      try {
+        const allowance = await readContract(config, {
+          address: MON_TOKEN_ADDRESS,
+          abi: TOKEN_ABI,
+          functionName: 'allowance',
+          args: [address, WHITELIST_CONTRACT]
+        });
+        
+        const requiredAmount = parseUnits('1', 18);
+        
+        if (allowance >= requiredAmount) {
+          approveBtn.classList.add('hidden');
+          payBtn.classList.remove('hidden');
+        } else {
+          approveBtn.classList.remove('hidden');
+          payBtn.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('Error checking allowance:', error);
+        approveBtn.classList.remove('hidden');
+      }
+    }
+
+    // Initialize SDK
+    sdk.actions.ready({ disableNativeGestures: true }).then(() => {
+      console.log('Farcaster MiniApp ready');
+    }).catch(err => {
+      console.error('SDK error:', err);
+      showMessage('Failed to initialize app', 'error');
+    });
+
+    // Connect Wallet
+    connectBtn.onclick = async () => {
+      try {
+        connectBtn.disabled = true;
+        connectBtn.innerHTML = 'Connecting<span class="loader"></span>';
+        
+        await connect(config, {
+          connector: farcasterMiniApp(),
+          chainId: base.id
+        });
+
+        userAddress = getAccount(config)?.address;
+
+        if (userAddress) {
+          const short = `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+          userAddressEl.textContent = short;
+          showToast(`Connected: ${short}`);
+          
+          connectBtn.classList.add('hidden');
+          await checkWhitelistStatus(userAddress);
+        }
+      } catch (error) {
+        console.error('Connect error:', error);
+        showToast('Connection failed. Try again.');
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'Connect Wallet';
+        showMessage('Connection failed', 'error');
+      }
+    };
+
+    // Approve MON Token
+    approveBtn.onclick = async () => {
+      try {
+        approveBtn.disabled = true;
+        approveBtn.innerHTML = 'Approving<span class="loader"></span>';
+        showMessage('Approving MON token...', 'info');
+        
+        const amount = parseUnits('1', 18);
+        
+        const txResponse = await writeContract(config, {
+          address: MON_TOKEN_ADDRESS,
+          abi: TOKEN_ABI,
+          functionName: 'approve',
+          args: [WHITELIST_CONTRACT, amount]
+        });
+
+        const hash = txResponse?.hash || txResponse;
+        showToast('Approval transaction sent...');
+        
+        await publicClient.waitForTransactionReceipt({ hash });
+        
+        showToast('MON token approved!');
+        showMessage('Approval successful! Now pay to join whitelist.', 'success');
+        
+        approveBtn.classList.add('hidden');
+        payBtn.classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('Approve error:', error);
+        const msg = error?.shortMessage || error?.message || 'Approval failed';
+        showToast(msg);
+        showMessage('Approval failed. Try again.', 'error');
+        approveBtn.disabled = false;
+        approveBtn.textContent = 'Approve MON Token';
+      }
+    };
+
+    // Pay and Join Whitelist
+    payBtn.onclick = async () => {
+      try {
+        payBtn.disabled = true;
+        payBtn.innerHTML = 'Processing<span class="loader"></span>';
+        showMessage('Joining whitelist...', 'info');
+        
+        const txResponse = await writeContract(config, {
+          address: WHITELIST_CONTRACT,
+          abi: WHITELIST_ABI,
+          functionName: 'payToJoinWhitelist'
+        });
+
+        const hash = txResponse?.hash || txResponse;
+        showToast('Transaction sent! Waiting for confirmation...');
+        
+        await publicClient.waitForTransactionReceipt({ hash });
+        
+        showToast('🎉 Successfully joined the whitelist!');
+        updateStatus(true);
+        
+      } catch (error) {
+        console.error('Payment error:', error);
+        const msg = error?.shortMessage || error?.message || 'Payment failed';
+        showToast(msg);
+        showMessage('Payment failed. Try again.', 'error');
+        payBtn.disabled = false;
+        payBtn.textContent = 'Pay 1 MON & Join Whitelist';
+      }
+    };
+
+    // Share on Farcaster
+    shareBtn.onclick = async () => {
+      try {
+        shareBtn.disabled = true;
+        showToast('Opening cast composer...');
+        
+        await sdk.actions.composeCast({
+          text: `🎯 Just joined the MON whitelist! 
+
+Pay 1 MON token to secure your spot for the upcoming mint.
+
+Join now! 👇`,
+          embeds: [GAME_URL]
+        });
+        
+        showToast('Cast composer opened!');
+      } catch (error) {
+        console.error('Share error:', error);
+        showToast('Failed to open composer');
+      } finally {
+        shareBtn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>
