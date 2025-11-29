@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjQwMjc4MSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweEM3QTNCNkY5YTgxODA5ZTg5Mzk4Q2E1MjQ5ZDY0ZTgxMzMyMDVFNTQifQ",
+    "payload": "eyJkb21haW4iOiJvbW9uYWQudmVyY2VsLmFwcCJ9",
+    "signature": "CGn6fpuRshYVW0GisArQ9y04c0d+hhx+1djH27iUicJbnIvtHJGgWxev1afRuikr95ev09b8gfjM+QT6nnhYtRs="
+  },
+  "frame": {
+    "version": "1",
+    "name": "Example Frame",
+    "iconUrl": "https://omonad.vercel.app/icon.png",
+    "homeUrl": "https://omonad.vercel.app",
+    "imageUrl": "https://omonad.vercel.app/image.png",
+    "buttonTitle": "Check this out",
+    "splashImageUrl": "https://omonad.vercel.app/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://omonad.vercel.app/api/webhook"
+  }
+}
