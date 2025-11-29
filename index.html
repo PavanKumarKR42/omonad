@@ -92,7 +92,7 @@
       50% { transform: translate(20px, 40px); }
     }
 
-    /* --- NEW USER INFO BAR STYLES --- */
+    /* --- USER INFO BAR STYLES --- */
     .user-info-bar {
       position: relative;
       z-index: 10;
@@ -193,7 +193,6 @@
       width: 120px;
       height: 120px;
       background: transparent;
-      /* Moved down from -100px to -50px */
       margin: -50px auto 10px; 
       display: flex;
       align-items: center;
@@ -206,7 +205,6 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      /* Faster rotation */
       animation: rotate-center 3s linear infinite;
       filter: drop-shadow(0 0 20px rgba(131, 110, 249, 0.4));
     }
@@ -239,8 +237,6 @@
       border: 1px solid var(--card-border);
     }
     
-    /* ... (rest of the CSS for stats-card, buttons, etc. remains the same) */
-
     .stat-row {
       display: flex;
       justify-content: space-between;
@@ -522,6 +518,7 @@
     import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
 
     // --- Configuration ---
+    // Using the API Key you provided
     const NEYNAR_API_KEY = '20FEAD29-CB14-438B-8309-868BA126B594';
     const NEYNAR_BASE_URL = 'https://api.neynar.com';
 
@@ -625,12 +622,14 @@
      * @param {string} address The wallet address to search for.
      */
     async function fetchFarcasterUser(address) {
+        // Construct the URL using the base URL and endpoint
         const url = `${NEYNAR_BASE_URL}/v2/farcaster/user/bulk-by-address?addresses=${address}`;
         try {
             const response = await fetch(url, {
                 headers: {
                     'accept': 'application/json',
-                    'api_key': NEYNAR_API_KEY,
+                    // Pass the API key in the 'api_key' header as required by Neynar
+                    'api_key': NEYNAR_API_KEY, 
                 }
             });
             
@@ -640,22 +639,24 @@
             }
 
             const data = await response.json();
+            // Neynar returns a dictionary keyed by address, and the value is an array of users. We take the first user.
             const userData = data[address] ? data[address][0] : null;
 
             if (userData) {
-                // Update UI with Farcaster data
+                // Farcaster user found: Display PFP, username, and FID
                 ui.pfp.src = userData.pfp_url;
-                ui.displayName.textContent = userData.display_name || userData.username;
+                // Use display_name if available, otherwise fallback to username
+                ui.displayName.textContent = userData.display_name || userData.username; 
                 ui.fid.textContent = `FID: ${userData.fid}`;
-                ui.userInfoBar.classList.add('visible');
             } else {
-                console.log("No Farcaster user found for this address.");
-                // Fallback for non-Farcaster addresses
+                // No Farcaster user found (matches your 'Wallet Connected' screenshot)
                 ui.displayName.textContent = "Wallet Connected";
+                // Inline SVG for the 'W' initial PFP
                 ui.pfp.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23836EF9"/><text x="50" y="65" font-size="30" font-family="Outfit" fill="white" text-anchor="middle">W</text></svg>';
                 ui.fid.textContent = `Address`;
-                ui.userInfoBar.classList.add('visible');
+                console.log("No Farcaster user found for this address. Displaying generic wallet info.");
             }
+            ui.userInfoBar.classList.add('visible');
 
         } catch (error) {
             console.error("Error fetching Neynar data:", error);
@@ -685,7 +686,7 @@
           ui.connectBtn.classList.add('hidden');
           showToast('Wallet Connected', '✅');
           
-          // 1. Fetch Farcaster User details
+          // 1. Fetch Farcaster User details using the connected wallet address
           await fetchFarcasterUser(userAddress);
 
           // 2. Check Whitelist Status
