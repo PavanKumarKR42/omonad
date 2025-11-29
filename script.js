@@ -28,7 +28,7 @@ const NFT_CONTRACT = '0x5a98a240d1951f422f1685c4c21251f446a26948';
 const MINT_PRICE = '13'; // 13 MON
 const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
 
-// ABI - Leave empty as per request, will be filled later
+// ABI
 const NFT_ABI = [
   {
     "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
@@ -105,7 +105,6 @@ let countdownInterval = null;
 
 // Countdown Timer
 function startCountdown() {
-  // Set target date (example: 2 days, 13 hours, 44 minutes from now)
   const targetDate = new Date();
   targetDate.setDate(targetDate.getDate() + 2);
   targetDate.setHours(targetDate.getHours() + 13);
@@ -217,7 +216,7 @@ function updateState(nftBalance) {
   }
 }
 
-// Initialize SDK and Auto-Connect
+// Initialize Farcaster SDK - MUST BE CALLED FIRST
 console.log('Initializing Farcaster SDK...');
 
 sdk.actions.ready({ disableNativeGestures: true })
@@ -231,6 +230,7 @@ sdk.actions.ready({ disableNativeGestures: true })
     try {
       let account = getAccount(config);
       
+      // Auto-connect if not already connected
       if (!account?.address) {
         const result = await connect(config, {
           connector: farcasterMiniApp(),
@@ -253,7 +253,10 @@ sdk.actions.ready({ disableNativeGestures: true })
         console.log('Wallet connected:', account.address);
         showToast('Wallet Connected', '✅');
         
+        // Fetch Farcaster user data
         await fetchFarcasterUser(userAddress);
+        
+        // Check NFT balance
         const balance = await checkNFTBalance(userAddress);
         updateState(balance);
         
@@ -267,6 +270,7 @@ sdk.actions.ready({ disableNativeGestures: true })
       setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
     }
 
+    // Auto-prompt to add app
     const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
     if (!hasPromptedAddApp) {
       try {
@@ -286,7 +290,7 @@ sdk.actions.ready({ disableNativeGestures: true })
     setStatus('Failed to initialize. Please reopen in Warpcast.');
   });
 
-// Manual Connect Button
+// Manual Connect Button (fallback)
 ui.connectBtn.onclick = async () => {
   try {
     ui.connectBtn.disabled = true;
@@ -350,10 +354,15 @@ ui.mintBtn.onclick = async () => {
 
 // Share Button
 ui.shareBtn.onclick = async () => {
-  sdk.actions.composeCast({
-    text: `🔮 Just secured my spot on the Monad Whitelist with an NFT pass! \n\nMint yours now and get guaranteed allocation 👇`,
-    embeds: [GAME_URL]
-  });
+  try {
+    await sdk.actions.composeCast({
+      text: `🔮 Just secured my spot on the Monad Whitelist with an NFT pass! \n\nMint yours now and get guaranteed allocation 👇`,
+      embeds: [GAME_URL]
+    });
+  } catch (error) {
+    console.error('Share error:', error);
+    showToast('Failed to share', '❌');
+  }
 };
 
 // Details Button
