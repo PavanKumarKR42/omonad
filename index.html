@@ -609,7 +609,7 @@ function updateUserBanner(userData) {
   
   // Display FID and Neynar Score
   const score = userData.score || userData.experimental?.neynar_user_score || 0;
-  ui.fidDisplay.innerHTML = `FID: ${userData.fid} <span style="margin: 0 8px; opacity: 0.5;">•</span> Score: ${score.toFixed(2)}`;
+  ui.fidDisplay.innerHTML = `FID: ${userData.fid} <span style="margin: 0 3px; opacity: 0.5;">•</span>Neynal Score: ${score.toFixed(2)}`;
   
   ui.userBanner.classList.add('visible');
 }
