@@ -335,7 +335,7 @@
     <div class="logo">
       <div class="logo-icon">🎯</div>
       <h1>MON Whitelist</h1>
-      <p class="subtitle">Pay 1 MON token to join the exclusive whitelist for our upcoming mint!</p>
+      <p class="subtitle">Pay 1 MON to join the exclusive whitelist for our upcoming mint!</p>
     </div>
     
     <div class="info-box">
@@ -357,7 +357,6 @@
     
     <div class="btn-group">
       <button class="btn btn-primary" id="connectBtn">Connect Wallet</button>
-      <button class="btn btn-primary hidden" id="approveBtn">Approve MON Token</button>
       <button class="btn btn-success hidden" id="payBtn">Pay 1 MON & Join Whitelist</button>
       <button class="btn btn-primary share-btn hidden" id="shareBtn">🎉 Share on Farcaster</button>
     </div>
@@ -374,77 +373,172 @@
     import {
       createConfig, connect, readContract, writeContract, getAccount
     } from 'https://esm.sh/@wagmi/core';
-    import { base } from 'https://esm.sh/@wagmi/core/chains';
     import { farcasterMiniApp } from 'https://esm.sh/@farcaster/miniapp-wagmi-connector';
-    import { createPublicClient, http, parseUnits } from 'https://esm.sh/viem';
+    import { createPublicClient, http, parseEther, defineChain } from 'https://esm.sh/viem';
 
-    // Configuration - REPLACE WITH YOUR CONTRACT ADDRESSES
-    const WHITELIST_CONTRACT = '0xYourWhitelistContractAddress';
-    const MON_TOKEN_ADDRESS = '0xYourMONTokenAddress';
+    // Define Monad Mainnet
+    const monad = defineChain({
+      id: 143,
+      name: 'Monad Mainnet',
+      network: 'monad',
+      nativeCurrency: {
+        decimals: 18,
+        name: 'Monad',
+        symbol: 'MON',
+      },
+      rpcUrls: {
+        default: { 
+          http: ['https://rpc.monad.xyz'], // Update with actual RPC URL
+        },
+        public: { 
+          http: ['https://rpc.monad.xyz'], // Update with actual RPC URL
+        },
+      },
+      blockExplorers: {
+        default: { 
+          name: 'MonadVision', 
+          url: 'https://monadvision.com' 
+        },
+        monadscan: { 
+          name: 'Monadscan', 
+          url: 'https://monadscan.com' 
+        },
+        socialscan: { 
+          name: 'Socialscan', 
+          url: 'https://monad.socialscan.io' 
+        },
+      },
+    });
+
+    // Your Contract Configuration
+    const WHITELIST_CONTRACT = '0x92a373ab17f14559b2176947e5032450a0928407';
     const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
     
-    // MON Token ABI (ERC20 approve function)
-    const TOKEN_ABI = [
-      {
-        "constant": false,
-        "inputs": [
-          { "name": "spender", "type": "address" },
-          { "name": "value", "type": "uint256" }
-        ],
-        "name": "approve",
-        "outputs": [{ "name": "", "type": "bool" }],
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [
-          { "name": "owner", "type": "address" },
-          { "name": "spender", "type": "address" }
-        ],
-        "name": "allowance",
-        "outputs": [{ "name": "", "type": "uint256" }],
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [{ "name": "account", "type": "address" }],
-        "name": "balanceOf",
-        "outputs": [{ "name": "", "type": "uint256" }],
-        "type": "function"
-      }
-    ];
-    
-    // Whitelist Contract ABI - REPLACE WITH YOUR ACTUAL ABI
+    // Your Contract ABI
     const WHITELIST_ABI = [
       {
         "inputs": [],
-        "name": "payToJoinWhitelist",
-        "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          }
+        ],
+        "name": "JoinedWhitelist",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "Withdrawn",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "getBalance",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
-        "inputs": [{ "name": "user", "type": "address" }],
-        "name": "isWhitelisted",
-        "outputs": [{ "name": "", "type": "bool" }],
+        "inputs": [],
+        "name": "joinFee",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
         "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "joinWhitelist",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "whitelisted",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
       }
     ];
 
     const config = createConfig({
-      chains: [base],
-      transports: { [base.id]: http() }
+      chains: [monad],
+      transports: { [monad.id]: http() }
     });
 
     const publicClient = createPublicClient({
-      chain: base,
+      chain: monad,
       transport: http()
     });
 
     // UI Elements
     const connectBtn = document.getElementById('connectBtn');
-    const approveBtn = document.getElementById('approveBtn');
     const payBtn = document.getElementById('payBtn');
     const shareBtn = document.getElementById('shareBtn');
     const statusBadge = document.getElementById('statusBadge');
@@ -472,13 +566,13 @@
         statusBadge.textContent = 'Whitelisted ✓';
         statusBadge.className = 'status-badge status-whitelisted';
         showMessage('Congratulations! You are whitelisted!', 'success');
-        approveBtn.classList.add('hidden');
         payBtn.classList.add('hidden');
         shareBtn.classList.remove('hidden');
       } else {
         statusBadge.textContent = 'Not Whitelisted';
         statusBadge.className = 'status-badge status-not-whitelisted';
-        showMessage('Join the whitelist by paying 1 MON token', 'info');
+        showMessage('Join the whitelist by paying 1 MON', 'info');
+        payBtn.classList.remove('hidden');
         shareBtn.classList.add('hidden');
       }
     }
@@ -488,42 +582,14 @@
         const whitelisted = await readContract(config, {
           address: WHITELIST_CONTRACT,
           abi: WHITELIST_ABI,
-          functionName: 'isWhitelisted',
+          functionName: 'whitelisted',
           args: [address]
         });
         
         updateStatus(whitelisted);
-        
-        if (!whitelisted) {
-          await checkApproval(address);
-        }
       } catch (error) {
         console.error('Error checking whitelist:', error);
         showMessage('Error checking whitelist status', 'error');
-      }
-    }
-
-    async function checkApproval(address) {
-      try {
-        const allowance = await readContract(config, {
-          address: MON_TOKEN_ADDRESS,
-          abi: TOKEN_ABI,
-          functionName: 'allowance',
-          args: [address, WHITELIST_CONTRACT]
-        });
-        
-        const requiredAmount = parseUnits('1', 18);
-        
-        if (allowance >= requiredAmount) {
-          approveBtn.classList.add('hidden');
-          payBtn.classList.remove('hidden');
-        } else {
-          approveBtn.classList.remove('hidden');
-          payBtn.classList.add('hidden');
-        }
-      } catch (error) {
-        console.error('Error checking allowance:', error);
-        approveBtn.classList.remove('hidden');
       }
     }
 
@@ -543,7 +609,7 @@
         
         await connect(config, {
           connector: farcasterMiniApp(),
-          chainId: base.id
+          chainId: monad.id
         });
 
         userAddress = getAccount(config)?.address;
@@ -565,43 +631,6 @@
       }
     };
 
-    // Approve MON Token
-    approveBtn.onclick = async () => {
-      try {
-        approveBtn.disabled = true;
-        approveBtn.innerHTML = 'Approving<span class="loader"></span>';
-        showMessage('Approving MON token...', 'info');
-        
-        const amount = parseUnits('1', 18);
-        
-        const txResponse = await writeContract(config, {
-          address: MON_TOKEN_ADDRESS,
-          abi: TOKEN_ABI,
-          functionName: 'approve',
-          args: [WHITELIST_CONTRACT, amount]
-        });
-
-        const hash = txResponse?.hash || txResponse;
-        showToast('Approval transaction sent...');
-        
-        await publicClient.waitForTransactionReceipt({ hash });
-        
-        showToast('MON token approved!');
-        showMessage('Approval successful! Now pay to join whitelist.', 'success');
-        
-        approveBtn.classList.add('hidden');
-        payBtn.classList.remove('hidden');
-        
-      } catch (error) {
-        console.error('Approve error:', error);
-        const msg = error?.shortMessage || error?.message || 'Approval failed';
-        showToast(msg);
-        showMessage('Approval failed. Try again.', 'error');
-        approveBtn.disabled = false;
-        approveBtn.textContent = 'Approve MON Token';
-      }
-    };
-
     // Pay and Join Whitelist
     payBtn.onclick = async () => {
       try {
@@ -609,10 +638,12 @@
         payBtn.innerHTML = 'Processing<span class="loader"></span>';
         showMessage('Joining whitelist...', 'info');
         
+        // Pay 1 MON (native currency on Monad chain)
         const txResponse = await writeContract(config, {
           address: WHITELIST_CONTRACT,
           abi: WHITELIST_ABI,
-          functionName: 'payToJoinWhitelist'
+          functionName: 'joinWhitelist',
+          value: parseEther('1') // 1 MON
         });
 
         const hash = txResponse?.hash || txResponse;
@@ -640,9 +671,9 @@
         showToast('Opening cast composer...');
         
         await sdk.actions.composeCast({
-          text: `🎯 Just joined the MON whitelist! 
+          text: `🎯 Just joined the whitelist on Monad! 
 
-Pay 1 MON token to secure your spot for the upcoming mint.
+Pay 1 MON to secure your spot for the upcoming mint.
 
 Join now! 👇`,
           embeds: [GAME_URL]
