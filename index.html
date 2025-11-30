@@ -514,7 +514,169 @@ h1 {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.hidden { display: none !important; }</style>
+.hidden { display: none !important; }
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  position: relative;
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-overlay.show .modal-content {
+  transform: scale(1) translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 82, 82, 0.2);
+  border-color: var(--error);
+  color: var(--error);
+  transform: rotate(90deg);
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(to right, #fff, #a5a5a5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.roadmap-phases {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.phase-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.phase-card:hover {
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+.phase-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.phase-card:hover::before {
+  opacity: 1;
+}
+
+.phase-number {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.phase-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.phase-card.phase-2 .phase-number {
+  background: linear-gradient(135deg, #D4AF37 0%, #FFD700 100%);
+  color: #1a1a1a;
+}
+
+.phase-card.phase-3 .phase-number {
+  background: linear-gradient(135deg, #2ECC71 0%, #A0F3D3 100%);
+  color: #1a1a1a;
+}
+</style>
 </head>
 <body>
 
@@ -598,6 +760,33 @@ h1 {
     <span id="toastMsg">Notification</span>
   </div>
 
+  <div id="infoModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-close" id="closeModal">×</div>
+      <div class="modal-header">
+        <h2 class="modal-title">🗺️ Our Roadmap</h2>
+        <p class="modal-subtitle">The journey to Monad NFT launch</p>
+      </div>
+      <div class="roadmap-phases">
+        <div class="phase-card phase-1">
+          <span class="phase-number">Phase 1</span>
+          <h3 class="phase-title">Whitelist</h3>
+          <p class="phase-description">Secure your spot by minting a Whitelist Pass NFT. Early supporters get guaranteed allocation.</p>
+        </div>
+        <div class="phase-card phase-2">
+          <span class="phase-number">Phase 2</span>
+          <h3 class="phase-title">Mint</h3>
+          <p class="phase-description">Whitelist holders get exclusive early access to mint the main collection before public sale.</p>
+        </div>
+        <div class="phase-card phase-3">
+          <span class="phase-number">Phase 3</span>
+          <h3 class="phase-title">Reveal</h3>
+          <p class="phase-description">The big reveal! Discover your unique NFT artwork and unlock exclusive community benefits.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
     import {
@@ -624,8 +813,8 @@ h1 {
       },
     });
 
-    const NFT_CONTRACT = '0x5a98a240d1951f422f1685c4c21251f446a26948';
-    const MINT_PRICE = '13';
+    const NFT_CONTRACT = '0x69128ce54688c230924167fe7b028e7dba51d815';
+    const MINT_PRICE = '30';
     const GAME_URL = 'https://monad-mint-whitelist.vercel.app/';
 
     const NFT_ABI = [
@@ -671,7 +860,10 @@ h1 {
       userPfp: document.getElementById('userPfp'),
       displayName: document.getElementById('displayName'),
       fidDisplay: document.getElementById('fidDisplay'),
-      countdown: document.getElementById('countdown')
+      countdown: document.getElementById('countdown'),
+      infoBtn: document.querySelector('.info-btn'),
+      infoModal: document.getElementById('infoModal'),
+      closeModal: document.getElementById('closeModal')
     };
 
     let userAddress = null;
@@ -925,6 +1117,21 @@ h1 {
     ui.detailsBtn.onclick = () => {
       showToast('Opening contract details...', 'ℹ️');
       window.open(`https://monadvision.com/address/${NFT_CONTRACT}`, '_blank');
+    };
+
+    // Info Modal Controls
+    ui.infoBtn.onclick = () => {
+      ui.infoModal.classList.add('show');
+    };
+
+    ui.closeModal.onclick = () => {
+      ui.infoModal.classList.remove('show');
+    };
+
+    ui.infoModal.onclick = (e) => {
+      if (e.target === ui.infoModal) {
+        ui.infoModal.classList.remove('show');
+      }
     };
   </script>
 </body>
