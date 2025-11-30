@@ -25,8 +25,7 @@
     }
   }' />
 
-  <style>
-:root {
+  <style>:root {
   --primary: #836EF9;
   --primary-glow: rgba(131, 110, 249, 0.5);
   --accent: #A0F3D3;
@@ -582,13 +581,14 @@ h1 {
   -webkit-backdrop-filter: blur(10px);
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
+  transition: opacity 0.3s ease;
 }
 
 .modal.show {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: stormFlash 0.6s ease;
+  animation: stormFlash 0.6s ease, continuousFlicker 3s ease-in-out infinite 0.6s;
 }
 
 @keyframes stormFlash {
@@ -620,6 +620,31 @@ h1 {
   }
 }
 
+/* Continuous subtle flicker animation */
+@keyframes continuousFlicker {
+  0%, 100% { 
+    background: rgba(0, 0, 0, 0.8);
+  }
+  15% { 
+    background: rgba(131, 110, 249, 0.15);
+  }
+  20% { 
+    background: rgba(0, 0, 0, 0.85);
+  }
+  45% { 
+    background: rgba(131, 110, 249, 0.12);
+  }
+  50% { 
+    background: rgba(0, 0, 0, 0.8);
+  }
+  75% { 
+    background: rgba(131, 110, 249, 0.18);
+  }
+  80% { 
+    background: rgba(0, 0, 0, 0.82);
+  }
+}
+
 .modal-content {
   background: rgba(20, 20, 30, 0.95);
   border: 1px solid var(--card-border);
@@ -640,6 +665,37 @@ h1 {
   will-change: transform;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+}
+
+.modal.show .modal-content {
+  animation: 
+    stormPopIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    continuousGlow 2.5s ease-in-out infinite 0.6s;
+}
+
+@keyframes continuousGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.7),
+      0 0 100px rgba(131, 110, 249, 0.3);
+  }
+  25% { 
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.7),
+      0 0 120px rgba(131, 110, 249, 0.5),
+      0 0 60px rgba(131, 110, 249, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.7),
+      0 0 100px rgba(131, 110, 249, 0.3);
+  }
+  75% { 
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.7),
+      0 0 130px rgba(131, 110, 249, 0.6),
+      0 0 70px rgba(131, 110, 249, 0.5);
+  }
 }
 
 @keyframes stormPopIn {
@@ -691,8 +747,19 @@ h1 {
   );
   border-radius: 24px;
   z-index: -1;
-  animation: electricPulse 0.6s ease;
-  opacity: 0;
+  animation: electricPulse 0.6s ease, continuousBorderPulse 2s ease-in-out infinite 0.6s;
+}
+
+@keyframes continuousBorderPulse {
+  0%, 100% { 
+    opacity: 0; 
+  }
+  15%, 45%, 75% { 
+    opacity: 0.4; 
+  }
+  20%, 50%, 80% { 
+    opacity: 0; 
+  }
 }
 
 @keyframes electricPulse {
@@ -710,6 +777,20 @@ h1 {
   animation: headerFlicker 0.8s ease;
 }
 
+.modal.show .modal-header {
+  animation: headerFlicker 0.8s ease, continuousHeaderFlicker 3s ease-in-out infinite 0.8s;
+}
+
+@keyframes continuousHeaderFlicker {
+  0%, 100% { opacity: 1; }
+  12% { opacity: 0.8; }
+  15% { opacity: 1; }
+  42% { opacity: 0.85; }
+  45% { opacity: 1; }
+  72% { opacity: 0.9; }
+  75% { opacity: 1; }
+}
+
 @keyframes headerFlicker {
   0%, 100% { opacity: 1; }
   20%, 40%, 60% { opacity: 0.7; }
@@ -724,6 +805,29 @@ h1 {
   text-shadow: 0 0 10px rgba(131, 110, 249, 0.5);
 }
 
+.modal.show .modal-header h2 {
+  animation: continuousTextGlow 2s ease-in-out infinite;
+}
+
+@keyframes continuousTextGlow {
+  0%, 100% { 
+    text-shadow: 0 0 10px rgba(131, 110, 249, 0.5);
+  }
+  25% { 
+    text-shadow: 
+      0 0 20px rgba(131, 110, 249, 0.8),
+      0 0 30px rgba(131, 110, 249, 0.5);
+  }
+  50% { 
+    text-shadow: 0 0 10px rgba(131, 110, 249, 0.5);
+  }
+  75% { 
+    text-shadow: 
+      0 0 25px rgba(131, 110, 249, 0.9),
+      0 0 35px rgba(131, 110, 249, 0.6);
+  }
+}
+
 .modal-close {
   background: none;
   border: none;
@@ -736,7 +840,7 @@ h1 {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -747,7 +851,8 @@ h1 {
 .modal-close:hover {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text-main);
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 20px rgba(131, 110, 249, 0.6);
 }
 
 .modal-body {
@@ -849,7 +954,8 @@ a {
 
 .hidden { 
   display: none !important; 
-}</style>
+}
+</style>
 </head>
 <body>
 
