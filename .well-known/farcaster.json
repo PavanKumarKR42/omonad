@@ -11,7 +11,7 @@
     "homeUrl": "https://omonad.vercel.app",
     "imageUrl": "https://omonad.vercel.app/image.png",
     "buttonTitle": "Check this out",
-    "splashImageUrl": "https://omonad.vercel.app/splash.png",
+    "splashImageUrl": "https://omonad.vercel.app/splash.gif",
     "splashBackgroundColor": "#eeccff",
     "webhookUrl": "https://omonad.vercel.app/api/webhook"
   }

@@ -631,9 +631,111 @@ h1 {
   color: var(--text-muted);
   line-height: 1.5;
 }
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.hidden { display: none !important; }</style>
+.hidden { display: none !important; }
+/* Smooth scrolling and performance improvements */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+/* Remove tap highlight on all interactive elements */
+button,
+a,
+.info-btn,
+.modal-close {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* Hardware acceleration for smooth animations */
+.container,
+.user-banner,
+.modal-content,
+.toast,
+.orb {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Optimize scrolling */
+.modal {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+.modal-body {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent blue outline on focus */
+*:focus {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth button interactions */
+.btn {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  will-change: transform;
+}
+
+.btn:active:not(:disabled) {
+  transition: transform 0.1s ease;
+}
+
+/* Optimize phase items hover */
+.phase-item {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Smooth scrolling for modal */
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Optimize logo animation */
+.logo-img {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Remove default mobile styles that cause lag */
+input,
+textarea,
+button,
+select,
+a {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth transitions for all interactive elements */
+.user-banner .info-btn,
+.modal-close,
+.btn-share,
+.btn-secondary {
+  transition: all 0.2s ease;
+}</style>
 </head>
 <body>
 
