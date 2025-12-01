@@ -1317,60 +1317,63 @@ sdk.actions.ready({ disableNativeGestures: true })
     setStatus('App ready! Connecting wallet...');
     startCountdown();
 
+    let account;
+
     try {
-      let account = getAccount(config);
+      // ✅ Always check existing connection first
+      account = getAccount(config);
 
       if (!account?.address) {
-        const result = await connect(config, {
+        console.log('No wallet found, attempting auto-connect...');
+        await connect(config, {
           connector: farcasterMiniApp(),
           chainId: monad.id
         });
-        console.log('Connection result:', result);
+
         account = getAccount(config);
       }
 
-      if (account?.address) {
-        isConnected = true;
-        userAddress = account.address;
-
-        const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
-        ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
-        ui.statusBadge.innerHTML = 'Connected';
-        ui.statusBadge.className = 'badge badge-success';
-        ui.connectBtn.classList.add('hidden');
-
-        console.log('Wallet connected:', account.address);
-        showToast('Wallet Connected', '✅');
-
-        await fetchFarcasterUser(userAddress);
-        const balance = await checkNFTBalance(userAddress);
-        updateState(balance);
-      } else {
-        console.warn('No address found after connection attempt');
-        setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
-      }
-
     } catch (err) {
-      console.error('Wallet connection error:', err);
-      setStatus('⚠️ Wallet connection failed.');
+      console.warn('Auto-connect threw error (may still be connected):', err);
+      account = getAccount(config); // ✅ RECHECK AFTER FAILURE
     }
 
-    // ✅ KEEP addMiniApp COMPLETELY SEPARATE
+    // ✅ FINAL VERDICT — ONLY HERE YOU DECIDE SUCCESS OR FAILURE
+    if (account?.address) {
+      isConnected = true;
+      userAddress = account.address;
+
+      const shortAddress = `${account.address.slice(0, 6)}...${account.address.slice(-4)}`;
+      ui.userAddress.innerHTML = `<span class="address-display">${shortAddress}</span>`;
+      ui.statusBadge.innerHTML = 'Connected';
+      ui.statusBadge.className = 'badge badge-success';
+      ui.connectBtn.classList.add('hidden');
+
+      console.log('Wallet connected:', account.address);
+      showToast('Wallet Connected', '✅');
+
+      await fetchFarcasterUser(userAddress);
+      const balance = await checkNFTBalance(userAddress);
+      updateState(balance);
+
+    } else {
+      console.warn('Wallet truly NOT connected');
+      setStatus('⚠️ Wallet not connected. Please reopen in Warpcast.');
+    }
+
+    // ✅ Add miniapp prompt — isolated & safe
     const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
     if (!hasPromptedAddApp) {
       try {
-        console.log('Auto-prompting add app...');
         await sdk.actions.addMiniApp();
-        sessionStorage.setItem('hasPromptedAddApp', 'true');
-        console.log('App added successfully!');
-      } catch (error) {
-        console.log('Add app prompt dismissed:', error?.name);
+      } catch (e) {
+        console.log('Add app dismissed');
+      } finally {
         sessionStorage.setItem('hasPromptedAddApp', 'true');
       }
     }
   })
   .catch(err => {
-    // ✅ This will NOW only fire if SDK ITSELF fails
     console.error("SDK READY FAILED:", err);
     setStatus('⚠️ SDK failed to initialize in Warpcast.');
   });
