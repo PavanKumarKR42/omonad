@@ -525,12 +525,11 @@ h1 {
 .status-msg.visible { 
   opacity: 1; 
 }
-
 .toast {
   position: fixed;
   bottom: 20px;
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
+  transform: translateX(-50%) translateY(100px) translateZ(0);
   background: rgba(20, 20, 30, 0.95);
   color: white;
   padding: 12px 20px;
@@ -546,13 +545,16 @@ h1 {
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   white-space: nowrap;
   will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .toast.show {
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) translateZ(0);
+  opacity: 1;
+  pointer-events: auto;
 }
+
 
 .loader {
   width: 16px;
@@ -1234,17 +1236,44 @@ a {
       ui.userBanner.classList.add('visible');
     }
 
-    function showToast(msg, icon = 'ℹ️') {
-      ui.toastMsg.textContent = msg;
-      ui.toastIcon.textContent = icon;
-      ui.toast.classList.add('show');
-      setTimeout(() => ui.toast.classList.remove('show'), 3000);
-    }
+   let toastTimer = null;
 
-    function setStatus(text) {
-      ui.statusMsg.textContent = text;
-      ui.statusMsg.classList.add('visible');
-    }
+function showToast(msg, icon = 'ℹ️') {
+  ui.toastMsg.textContent = msg;
+  ui.toastIcon.textContent = icon;
+
+  // Force reflow so animation always restarts
+  ui.toast.classList.remove('show');
+  void ui.toast.offsetWidth; 
+
+  ui.toast.classList.add('show');
+
+  // ✅ Clear previous timer so it doesn’t stack
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+
+  // ✅ Auto-hide after 3 seconds
+  toastTimer = setTimeout(() => {
+    ui.toast.classList.remove('show');
+  }, 3000);
+}
+
+  let statusTimer = null;
+
+function setStatus(text, duration = 3000) {
+  ui.statusMsg.textContent = text;
+  ui.statusMsg.classList.add('visible');
+
+  if (statusTimer) {
+    clearTimeout(statusTimer);
+  }
+
+  statusTimer = setTimeout(() => {
+    ui.statusMsg.classList.remove('visible');
+  }, duration);
+}
+
 
     async function checkNFTBalance(address) {
       try {
@@ -1325,7 +1354,9 @@ a {
 
         } catch (err) {
           console.error('Wallet connection error:', err);
-          setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
+          if (!account?.address) {
+            setStatus('⚠️ Could not connect wallet. Please ensure you are using Warpcast app.');
+          }
         }
 
         const hasPromptedAddApp = sessionStorage.getItem('hasPromptedAddApp');
